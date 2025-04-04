@@ -2,17 +2,18 @@
 This sample contains the data used in the [Measurement of atmospheric neutrino mixing with improved IceCube DeepCore calibration and data processing](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.108.012014), published in Phys. Rev. D 108, 012014 (2023). Please refer to the publication for a detailed explanation of the sample and analysis.
 
 ## Files
-Along with this readme, you'll find six `.csv` files and one ipython notebook:
+Along with this readme, you'll find nine `.csv` files and one ipython notebook:
 * `data.csv`: count of data events per analysis bin.
 * `mc_nu*.csv`: event-by-event information of MC neutrinos, split between neutral current (NC) and particle type + charged current (CC).
 * `mc_mu.csv`: per-bin information from the MC muon background.
+* `hypersurfaces_*.csv`: correction to be applied to the neutrino MC expected count per bin to account for detector systematics.
 * `example.ipynb`: ipython notebook presenting a simple example fit to the data.
 
 ## Binning
 Reconstructed variables are provided in the analysis binning, such that values are chosen so that events fall into the correct bins.
-* Reconstructed energy or `reco_energy` in GeV: [6.31, 8.45862141, 11.33887101, 15.19987592, 20.37559363, 27.3136977, 36.61429921, 49.08185342, 65.79474104, 88.19854278, 158.49].
-* Reconstructed cosine of the particle's zenith angle or `reco_coszen`: [-1., -0.89, -0.78, -0.67, -0.56, -0.45, -0.34, -0.23, -0.12, -0.01,  0.1]. The convention is such that -1 corresponds to straight "upgoing" trajectories (earth crossing), +1 to straight "downgoing" (directly from the sky above), and 0 is horizontal.
-* Reconstructed particle ID or `pid`: [0.55, 0.75, 1.]. Represents the likelihood that an event is a cascade or a track: 0 corresponds to a cascade, and 1 to a track to the best of our knowledge.
+* Reconstructed energy or `reco_energy` in GeV: `[6.31, 8.45862141, 11.33887101, 15.19987592, 20.37559363, 27.3136977, 36.61429921, 49.08185342, 65.79474104, 88.19854278, 158.49]`.
+* Reconstructed cosine of the particle's zenith angle or `reco_coszen`: `[-1., -0.89, -0.78, -0.67, -0.56, -0.45, -0.34, -0.23, -0.12, -0.01, 0.1]`. The convention is such that -1 corresponds to straight "upgoing" trajectories (earth crossing), +1 to straight "downgoing" (directly from the sky above), and 0 is horizontal.
+* Reconstructed particle ID or `pid`: `[0.55, 0.75, 1.]`. Represents the likelihood that an event is a cascade or a track: 0 corresponds to a cascade, and 1 to a track to the best of our knowledge.
 
 ---
 ## data.csv
@@ -62,26 +63,6 @@ Then, for CC DIS events, we encode the experimental-like kinematic variables. Al
 * `x` is the Bjorken scaling variable; and
 * `y` the inelasticity.
 
-Afterwards, there are 10 columns which correspond to the ultrasurfaces gradients -- 2 per detector systematic. These parameters are used to update the weight in each event: if `d_syst` is the difference between the detector systematic's best fit value and the nominal value, `grad_syst` and `grad2_syst` the gradient parameters, and `W` the weight to be updated, then
-
-        W = W * (1 + grad_syst * d_syst + grad2_syst * d_syst^2),
-
-for each detector systematic. The nominal detector systematic parameters used for this study are
-* DOM efficiency: 100%.
-* Hole ice p0: 0.101569.
-* Hole ice p1: -0.049344.
-* Bulk ice absorption: 1.
-* Bulk ice scattering: 1.05.
-
-For a practical example on how to reweight events, please see the `ultrasurfaces_reweight()` function in the attached notebook. For a detailed explanation of the method, please see [Treating detector systematics via a likelihood free inference method](https://iopscience.iop.org/article/10.1088/1748-0221/18/10/P10019).
-
-Among these columns,
-* `grad_dom_eff` and `grad2_dom_eff` are the gradient parameters for the DOM efficiency;
-* `grad_hi_p0` and `grad2_hi_p0` are those for the hole ice  p0;
-* `grad_hi_p1` and `grad2_hi_p1` for the hole ice p1;
-* `grad_bi_abs` and `grad2_bi_abs` for the bulk ice absorption; and
-* `grad_bi_scat` and `grad2_bi_scat` for the bulk ice scattering.
-
 ---
 ## mc_mu.csv
 Counts and absolute uncertainties for the atmospheric muon background in the analysis binning. Due to the high efficiency of the event selection, the produced histogram is sparsely populated, which is overcome by applying a variable bandwidth kernel density estimator (KDE).
@@ -90,3 +71,14 @@ Counts and absolute uncertainties for the atmospheric muon background in the ana
 * `pid`: reconstructed particle ID in analysis binning.
 * `reco_coszen`: reconstructed cosine(zenith) in analysis binning.
 * `reco_energy`: reconstructed energy (GeV) in analysis binning.
+
+---
+## hypersurfaces_*.csv
+**TODO.**
+
+<!-- Nominal parameters:
+* dom_eff          :  1.00
+* hole_ice_p0      :  0.10
+* hole_ice_p1      : -0.05
+* bulk_ice_abs     :  1.00
+* bulk_ice_scatter :  1.00 -->
