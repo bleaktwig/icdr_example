@@ -4,16 +4,16 @@ This sample contains the data used in the [Measurement of atmospheric neutrino m
 ## Files
 Along with this readme, you'll find nine `.csv` files and one ipython notebook:
 * `data.csv`: count of data events per analysis bin.
-* `mc_nu*.csv`: event-by-event information of MC neutrinos, split between neutral current (NC) and particle type + charged current (CC).
+* `mc_nu*.csv`: event-by-event information of Monte-Carlo (MC) neutrinos; split between neutral current (NC) and particle type + charged current (CC).
 * `mc_mu.csv`: per-bin information from the MC muon background.
-* `hypersurfaces_*.csv`: correction to be applied to the neutrino MC expected count per bin to account for detector systematics.
+* `hs_nu*.csv`: correction to be applied to the neutrino MC expected count per bin to account for detector systematics; split between NC + nu_e CC, nu_mu CC, and nu_tau CC.
 * `example.ipynb`: ipython notebook presenting a simple example fit to the data.
 
 ## Binning
 Reconstructed variables are provided in the analysis binning, such that values are chosen so that events fall into the correct bins.
-* Reconstructed energy or `reco_energy` in GeV: `[6.31, 8.45862141, 11.33887101, 15.19987592, 20.37559363, 27.3136977, 36.61429921, 49.08185342, 65.79474104, 88.19854278, 158.49]`.
-* Reconstructed cosine of the particle's zenith angle or `reco_coszen`: `[-1., -0.89, -0.78, -0.67, -0.56, -0.45, -0.34, -0.23, -0.12, -0.01, 0.1]`. The convention is such that -1 corresponds to straight "upgoing" trajectories (earth crossing), +1 to straight "downgoing" (directly from the sky above), and 0 is horizontal.
-* Reconstructed particle ID or `pid`: `[0.55, 0.75, 1.]`. Represents the likelihood that an event is a cascade or a track: 0 corresponds to a cascade, and 1 to a track to the best of our knowledge.
+* Reconstructed energy, or `reco_energy`, in GeV: `[6.31, 8.45862141, 11.33887101, 15.19987592, 20.37559363, 27.3136977, 36.61429921, 49.08185342, 65.79474104, 88.19854278, 158.49]`.
+* Reconstructed cosine of the particle's zenith angle, or `reco_coszen`: `[-1., -0.89, -0.78, -0.67, -0.56, -0.45, -0.34, -0.23, -0.12, -0.01, 0.1]`. The convention is such that -1 corresponds to straight "upgoing" trajectories (earth crossing), +1 to straight "downgoing" (directly from the sky above), and 0 is horizontal.
+* Reconstructed particle ID, or `pid`: `[0.55, 0.75, 1.]`. Represents the likelihood that an event is a cascade or a track: 0 corresponds to a cascade, and 1 to a track to the best of our knowledge.
 
 ---
 ## data.csv
@@ -65,7 +65,7 @@ Then, for CC DIS events, we encode the experimental-like kinematic variables. Al
 
 ---
 ## mc_mu.csv
-Counts and absolute uncertainties for the atmospheric muon background in the analysis binning. Due to the high efficiency of the event selection, the produced histogram is sparsely populated, which is overcome by applying a variable bandwidth kernel density estimator (KDE).
+Counts and absolute uncertainties for the atmospheric muon background in the analysis binning. Due to the high efficiency of the event selection, the produced histogram is sparsely populated, which we overcome by applying a variable bandwidth kernel density estimator (KDE).
 * `count`: count of muons in the corresponding bin.
 * `abs_uncertainty`: absolute uncertainty on count, accounting for statistical and shape uncertainty.
 * `pid`: reconstructed particle ID in analysis binning.
@@ -73,12 +73,21 @@ Counts and absolute uncertainties for the atmospheric muon background in the ana
 * `reco_energy`: reconstructed energy (GeV) in analysis binning.
 
 ---
-## hypersurfaces_*.csv
-**TODO.**
+## hs_nu*.csv
+Hypersurfaces needed to correct the histograms from detector uncertainties. The three files included are
+* `hs_nu_nc_nue_cc.csv`: NC neutrino hypersurfaces of all flavors, and CC electron neutrino hypersurfaces;
+* `hs_numu_cc.csv`: CC muon neutrino hypersurfaces; and
+* `hs_nutau_cc.csv`: CC tau neutrino hypersurfaces.
 
-<!-- Nominal parameters:
-* dom_eff          :  1.00
-* hole_ice_p0      :  0.10
-* hole_ice_p1      : -0.05
-* bulk_ice_abs     :  1.00
-* bulk_ice_scatter :  1.00 -->
+Each bin in the MC neutrino histogram is to be corrected by a multiplicative factor obtained with these hypersurfaces. This factor is given by the intercept c plus each slope m_n multiplied by the difference between the parameter fit and the nominal value for the parameter, or
+
+    f(p_1, ..., p_N) = c + sum_{n=1}^N m_n * Delta p_n.
+
+The nominal value of each parameter is
+* DOM efficiency (`dom_eff`): 1.00;
+* hole ice p0 (`hole_ice_p0`): 0.10;
+* hole ice p1 (`hole_ice_p1`): -0.05;
+* bulk ice absorption (`bulk_ice_abs`): 1.00; and
+* bulk ice scattering (`bulk_ice_scat`): 1.00.
+
+The files are separated into the same bins as the others: reconstructed energy, reconstructed cosine zenith, and PID. Hypersurfaces are also binned in Delta m31, since the hypersurface fits are sensitive to the choice of this parameter. To account for hypersurfaces between two Delta m31 bins, a piece-wise linear interpolation is used. Please find the details of its implementation in the included iPython notebook. A more detailed explanation of the procedure is included in the publication.
